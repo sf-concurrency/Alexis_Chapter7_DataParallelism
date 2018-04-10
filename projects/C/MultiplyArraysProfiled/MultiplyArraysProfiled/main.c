@@ -1,4 +1,3 @@
-
 /***
  * Excerpted from "Seven Concurrency Models in Seven Weeks",
  * published by The Pragmatic Bookshelf.
@@ -14,8 +13,10 @@
 #endif
 
 #include <stdio.h>
+#include <mach/mach_time.h>
+#include <inttypes.h>
 
-#define NUM_ELEMENTS 1024
+#define NUM_ELEMENTS (1024 * 100)
 
 /// A string of OpenCl source code, identical to multiply_arrays.cl.
 /// This is to prevent this executable from depending on an external file
@@ -28,6 +29,8 @@ char * const opencl_program_source =
 "    int i = get_global_id(0);"
 "    output[i] = inputA[i] * inputB[i];"
 "  }";
+
+
 
 char* read_source(const char* filename) {
   FILE *h = fopen(filename, "r");
@@ -55,7 +58,7 @@ int main() {
 
   cl_context context = clCreateContext(NULL, 1, &device, NULL, NULL, NULL);
 
-  cl_command_queue queue = clCreateCommandQueue(context, device, 0, NULL);
+  cl_command_queue queue = clCreateCommandQueue(context, device, CL_QUEUE_PROFILING_ENABLE, NULL);
 
   char* source = opencl_program_source;
 //  char* source = read_source("multiply_arrays.cl");
@@ -71,6 +74,8 @@ int main() {
   random_fill(a, NUM_ELEMENTS);
   random_fill(b, NUM_ELEMENTS);
 
+  uint64_t startGPU = mach_absolute_time();
+
   cl_mem inputA = clCreateBuffer(context, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR,
                                  sizeof(cl_float) * NUM_ELEMENTS, a, NULL);
   cl_mem inputB = clCreateBuffer(context, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR,
@@ -82,13 +87,27 @@ int main() {
   clSetKernelArg(kernel, 1, sizeof(cl_mem), &inputB);
   clSetKernelArg(kernel, 2, sizeof(cl_mem), &output);
 
+  cl_event timing_event;
   size_t work_units = NUM_ELEMENTS;
-  clEnqueueNDRangeKernel(queue, kernel, 1, NULL, &work_units, NULL, 0, NULL, NULL);
+  clEnqueueNDRangeKernel(queue, kernel, 1, NULL, &work_units,
+                         NULL, 0, NULL, &timing_event);
 
   cl_float results[NUM_ELEMENTS];
   clEnqueueReadBuffer(queue, output, CL_TRUE, 0, sizeof(cl_float) * NUM_ELEMENTS,
                       results, 0, NULL, NULL);
 
+  uint64_t endGPU = mach_absolute_time();
+  printf("Total (GPU): %lu ns\n\n", (unsigned long)(endGPU - startGPU));
+
+  cl_ulong starttime;
+  clGetEventProfilingInfo(timing_event, CL_PROFILING_COMMAND_START,
+                          sizeof(cl_ulong), &starttime, NULL);
+  cl_ulong endtime;
+  clGetEventProfilingInfo(timing_event, CL_PROFILING_COMMAND_END,
+                          sizeof(cl_ulong), &endtime, NULL);
+  printf("Elapsed (GPU): %lu ns\n\n", (unsigned long)(endtime - starttime));
+
+  clReleaseEvent(timing_event);
   clReleaseMemObject(inputA);
   clReleaseMemObject(inputB);
   clReleaseMemObject(output);
@@ -97,9 +116,13 @@ int main() {
   clReleaseCommandQueue(queue);
   clReleaseContext(context);
 
-  for (int i = 0; i < NUM_ELEMENTS; ++i) {
-    printf("%f * %f = %f\n", a[i], b[i], results[i]);
-  }
+  uint64_t startCPU = mach_absolute_time();
+
+  for (int i = 0; i < NUM_ELEMENTS; ++i)
+  results[i] = a[i] * b[i];
+
+  uint64_t endCPU = mach_absolute_time();
+  printf("Elapsed (CPU): %lu ns\n\n", (unsigned long)(endCPU - startCPU));
 
   return 0;
 }
