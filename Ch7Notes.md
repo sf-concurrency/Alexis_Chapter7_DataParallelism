@@ -112,7 +112,7 @@ So to summarize, the changes to base C are:
 - no stdlib, instead more mathy stdlib
 - more synchronization primitives
 
-Do:
+#### Exercises to do:
 
 - Modify our array multiplication kernel to deal with arrays of
   different types, and profile the resulting performance. How does it
@@ -136,5 +136,26 @@ Do:
   those provided by standard C—in particular, it includes vector types
   such as float4 or ulong3. Rewrite our kernel to multiply two buffers
   of vectors. How are these vector types represented on the host?
+
+#### Code Notes
+
+The projects distributed with the book still work fine with their `Makefile`s. Yay.
+
+Distributed Projects:
+- MultiplyArrays/
+- MultiplyArraysProfiled/
+- MultiplyArraysWithErrorHandling/
+
+Possible extra projects:
+- just migrate to Xcode
+- translate to Swift, for Swift-to-Swift comparison of OpenCL and Metal
+- Compare API design with TF, pytorch, Metal, numpy, and other
+  frameworks that abstract GPU-accelerated or vectorized computation.
+
+
+
+
+### Day 2
+
 
 
