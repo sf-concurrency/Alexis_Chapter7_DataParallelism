@@ -147,7 +147,7 @@ Distributed Projects:
 - MultiplyArraysWithErrorHandling/
 
 Possible extra projects:
-- just migrate to Xcode
+- DONE just migrate to Xcode
 - translate to Swift, for Swift-to-Swift comparison of OpenCL and Metal
 - Compare API design with TF, pytorch, Metal, numpy, and other
   frameworks that abstract GPU-accelerated or vectorized computation.
