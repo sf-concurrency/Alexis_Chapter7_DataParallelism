@@ -244,4 +244,31 @@ Interesting.
 
 What is data-parallelized and what is handled by loop here?
 
+`ripple.cl` seems to be *data-parallel over 2D space*, but *iterative over ripple count*.
 
+The `get_global_id(0)` function call is the magic which is delivering
+a different input to every different spatial point within the
+mesh. Presumably, this is an abstracted version of the way that
+graphics pipelines deliver different image coordinates to shader
+functions running in parallel.
+
+This idea of a a *generalized index* seems key.
+
+You define a generalized index space. Then you define a function that takes a point in that space.
+
+Then you data-parallelize by evaluating your function simultaneously
+over all possible points in the index space.
+
+For plain graphics programming, that index space is a set of vertexes
+or possibly on-screen pixel coordinates.
+
+For GPGPU computing, that index space is whatever the set of index
+values is necessary to index over some data structure that is of
+interest and is susceptible to this treatment.
+
+SO that index might be the set of integer pairs needed to represent
+locations in a 2d matrix. That set could itself be indexed over with a
+single integer value, by mapping the set of integers to the set of
+pairs, by assuming the row and height dimensions.
+
+<!-- Markdeep: --><style class="fallback">body{visibility:hidden;white-space:pre;font-family:monospace}</style><script src="markdeep.min.js"></script><script src="https://casual-effects.com/markdeep/latest/markdeep.min.js"></script><script>window.alreadyProcessedMarkdeep||(document.body.style.visibility="visible")</script>
