@@ -126,7 +126,6 @@ So to summarize, the changes to base C are:
   more than just change the flag for the code to remain functional),
   and benchmark the resulting performance. What are the trade-offs
   between different buffer-allocation strategies?
-
  
 - Rewrite the host to use `clEnqueueMapBuffer()` instead of
   `clCreateBuffer()` and profile the result. When might this be an
