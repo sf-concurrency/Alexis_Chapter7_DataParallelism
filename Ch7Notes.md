@@ -157,5 +157,91 @@ Possible extra projects:
 
 ### Day 2
 
+#### Interesting material here on the compute model
+
+Hierarchy of compute resources:
+
+- an OpenCL *platform* consists of a host that connected to one ore more *devices*
+- a *device* contains one ore more *compute units*
+- a *compute unit* provides a number of *processing elements*
+
+Hierarchy of parcels of work:
+
+- a *work-item* executes on a processing element.
+- a collection of work-items on the same compute unit is a *work-group*
+- the work items in a work group *share local memory*
+
+From material in the previous chapter, it seems like a work-item can
+be as small as an individual multiplication of two floating point
+numbers.
+
+Memory model:
+- *global memory*, shared over all work-items within a single device
+- *constant memory*, region of global memory constant over the extent of
+  the kernel's execution
+- *local memory*, shared in a single work-group, thus over some
+  work-items, and thus is a mechanism for communication between
+  distinct work-items
+- *private memory*, local to a single work-item
+
+All of this presents: **a compute abstraction unified over the GPU and the CPU**.
+
+But, multiple passing comments in the chapter suggest that for the
+best perf, you need to understand how the OpenCL abstractions are
+implemented on the underlying architecture, and that this is quite
+esoteric, so it makes me wonder how successful this abstraction is.
+
+If you only use OpenCL when you want max perf, but then you need to
+write arch-specific code for max perf, then what was the point of
+OpenCL?
+
+
+#### OpenCL FindDevices output on my MacBookPro 15" 2016:
+
+```
+Found 1 OpenCL platform(s)
+
+Platform 0
+Name: Apple
+Vendor: Apple
+
+Found 3 device(s)
+
+Device 0
+Name: Intel(R) Core(TM) i7-6920HQ CPU @ 2.90GHz
+Vendor: Intel
+Compute Units: 8
+Global Memory: 17179869184
+Local Memory: 32768
+Workgroup size: 1024
+
+Device 1
+Name: Intel(R) HD Graphics 530
+Vendor: Intel Inc.
+Compute Units: 24
+Global Memory: 1610612736
+Local Memory: 65536
+Workgroup size: 256
+
+Device 2
+Name: AMD Radeon Pro 460 Compute Engine
+Vendor: AMD
+Compute Units: 16
+Global Memory: 4294967296
+Local Memory: 32768
+Workgroup size: 256
+```
+
+
+#### MapReduce to find minimum element in OpenCL
+
+Interesting.
+
+`barrier` as a synchronization primitive is notable.
+
+
+### Day 3: Ripple example
+
+What is data-parallelized and what is handled by loop here?
 
 
