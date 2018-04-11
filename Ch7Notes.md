@@ -52,16 +52,16 @@ Reminiscent of TensorFlow
 
 Day 1 Self-Study
 Find
-• The OpenCL specification
+
+- The OpenCL specification
 
 https://www.khronos.org/registry/OpenCL/specs/opencl-1.2.pdf
 
-• The OpenCL API reference card
+- The OpenCL API reference card
 
 https://www.khronos.org/files/opencl-1-2-quick-reference-card.pdf
 
-
-• The language used to define an OpenCL kernel is C-like. How does it differ from C?
+- The language used to define an OpenCL kernel is C-like. How does it differ from C?
 
 Says the spec:
 
@@ -149,8 +149,8 @@ Distributed Projects:
 
 Possible extra projects:
 - DONE just migrate to Xcode
-- translate to Swift, for Swift-to-Swift comparison of OpenCL and Metal
-- Compare API design with TF, pytorch, Metal, numpy, and other
+- DONE translate to Swift, for Swift-to-Swift comparison of OpenCL and Metal
+- TODO compare API design with TF, pytorch, Metal, numpy, and other
   frameworks that abstract GPU-accelerated or vectorized computation.
 
 
@@ -233,13 +233,14 @@ Local Memory: 32768
 Workgroup size: 256
 ```
 
+Noted: Work-groups are _small_. Not big enough for a single large array of floats.
 
 #### MapReduce to find minimum element in OpenCL
 
-Interesting.
+Interesting. Seems surprisingly analogous to the tricks people play to
+map-reduce over multiple hosts in a distributed compute setup.
 
 `barrier` as a synchronization primitive is notable.
-
 
 ### Day 3: Ripple example
 
@@ -253,9 +254,10 @@ mesh. Presumably, this is an abstracted version of the way that
 graphics pipelines deliver different image coordinates to shader
 functions running in parallel.
 
-This idea of a a *generalized index* seems key.
+This key idea here seesm to be of a *generalized index*.
 
-You define a generalized index space. Then you define a function that takes a point in that space.
+You define a generalized index space. Then you define a function that
+takes a point in that space.
 
 Then you data-parallelize by evaluating your function simultaneously
 over all possible points in the index space.
@@ -265,9 +267,9 @@ or possibly on-screen pixel coordinates.
 
 For GPGPU computing, that index space is whatever the set of index
 values is necessary to index over some data structure that is of
-interest and is susceptible to this treatment.
+interest and is susceptible to this kind of data-parallel processing.
 
-SO that index might be the set of integer pairs needed to represent
+So that index might be the set of integer pairs needed to represent
 locations in a 2d matrix. That set could itself be indexed over with a
 single integer value, by mapping the set of integers to the set of
 pairs, by assuming the row and height dimensions.
